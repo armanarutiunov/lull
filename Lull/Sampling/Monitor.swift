@@ -46,6 +46,7 @@ final class Monitor {
             recentCPUPercent: window.recentCPUPercent,
             apps: AppGrouping.group(window.processAverages),
             thermal: Thermal(ProcessInfo.processInfo.thermalState),
+            temperature: TemperatureReader.read(),
             memory: MemoryReader.pressure(),
             memoryUsedBytes: memory.used,
             memoryTotalBytes: memory.total,

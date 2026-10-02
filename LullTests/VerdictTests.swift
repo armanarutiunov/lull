@@ -18,6 +18,7 @@ struct VerdictTests {
             recentCPUPercent: cpu,
             apps: apps,
             thermal: thermal,
+            temperature: .init(cpuCelsius: 45, batteryCelsius: 30),
             memory: memory,
             memoryUsedBytes: 8 << 30,
             memoryTotalBytes: 16 << 30,

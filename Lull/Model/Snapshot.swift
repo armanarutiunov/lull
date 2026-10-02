@@ -29,6 +29,7 @@ struct Snapshot: Equatable, Sendable {
     var recentCPUPercent: Double?
     var apps: [AppUsage]
     var thermal: Thermal
+    var temperature: TemperatureReader.Reading
     var memory: MemoryPressure
     var memoryUsedBytes: UInt64
     var memoryTotalBytes: UInt64
