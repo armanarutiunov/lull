@@ -19,6 +19,8 @@ enum TemperatureReader {
     private static let temperatureEventType: Int64 = 15
 
     private struct API {
+        // Services borrow the client's internal lock, so the client must outlive them.
+        let client: AnyObject
         let copyEvent: CopyEvent
         let getFloatValue: GetFloatValue
         let services: [(name: String, service: AnyObject)]
@@ -42,7 +44,7 @@ enum TemperatureReader {
             let product = IOHIDServiceClientCopyProperty(unsafeBitCast(service, to: IOHIDServiceClient.self), "Product" as CFString)
             return (product as? String).map { (name: $0, service: service) }
         }
-        return API(copyEvent: copyEvent, getFloatValue: getFloatValue, services: services)
+        return API(client: client, copyEvent: copyEvent, getFloatValue: getFloatValue, services: services)
     }()
 
     static func read() -> Reading {
