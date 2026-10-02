@@ -5,7 +5,7 @@ struct PopoverView: View {
     let monitor: Monitor
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: 14) {
             if let verdict = monitor.verdict, let snapshot = monitor.snapshot {
                 header(verdict: verdict, snapshot: snapshot)
                 Divider()
@@ -19,21 +19,21 @@ struct PopoverView: View {
             Divider()
             footer
         }
-        .padding(14)
-        .frame(width: 340)
+        .padding(16)
+        .frame(width: 400)
         .onAppear { monitor.refresh() }
     }
 
     private func header(verdict: Verdict, snapshot: Snapshot) -> some View {
         HStack(spacing: 10) {
             Image(systemName: verdict.level.symbolName)
-                .font(.title2)
+                .font(.largeTitle)
                 .foregroundStyle(verdict.level.color)
             VStack(alignment: .leading, spacing: 2) {
                 Text(verdict.level.title)
-                    .font(.headline)
+                    .font(.title2.weight(.semibold))
                 Text("Averaged over \(Self.format(span: snapshot.span)) · updated \(snapshot.takenAt.formatted(date: .omitted, time: .shortened))")
-                    .font(.caption)
+                    .font(.callout)
                     .foregroundStyle(.secondary)
             }
         }
@@ -43,11 +43,11 @@ struct PopoverView: View {
     private func reasons(_ verdict: Verdict) -> some View {
         if verdict.reasons.isEmpty {
             Text("Nothing heavy is running. It's fine to turn off the display and leave it on the charger.")
-                .font(.callout)
+                .font(.body)
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
         } else {
-            VStack(alignment: .leading, spacing: 8) {
+            VStack(alignment: .leading, spacing: 10) {
                 ForEach(verdict.reasons) { reason in
                     ReasonRow(reason: reason)
                 }
@@ -62,7 +62,7 @@ struct PopoverView: View {
             Button("Quit Lull") { NSApplication.shared.terminate(nil) }
                 .buttonStyle(.borderless)
         }
-        .font(.callout)
+        .font(.body)
     }
 
     static func format(span: TimeInterval) -> String {
@@ -79,9 +79,9 @@ private struct ReasonRow: View {
         HStack(alignment: .firstTextBaseline, spacing: 8) {
             Circle()
                 .fill(reason.level.color)
-                .frame(width: 8, height: 8)
+                .frame(width: 10, height: 10)
             Text(reason.message)
-                .font(.callout)
+                .font(.body)
                 .fixedSize(horizontal: false, vertical: true)
             Spacer(minLength: 8)
             if let app = reason.app {
@@ -97,7 +97,7 @@ private struct ReasonRow: View {
                         }
                     }
                 }
-                .controlSize(.small)
+                .controlSize(.regular)
                 .tint(confirming ? .red : nil)
             }
         }
@@ -108,10 +108,10 @@ private struct StatsView: View {
     let snapshot: Snapshot
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
+        VStack(alignment: .leading, spacing: 8) {
             if !topApps.isEmpty {
                 Text("Top CPU · % of one core")
-                    .font(.caption.weight(.semibold))
+                    .font(.subheadline.weight(.semibold))
                     .foregroundStyle(.secondary)
                 ForEach(topApps) { app in
                     HStack {
@@ -121,10 +121,10 @@ private struct StatsView: View {
                             .monospacedDigit()
                             .foregroundStyle(.secondary)
                     }
-                    .font(.callout)
+                    .font(.body)
                 }
             }
-            Grid(alignment: .leading, horizontalSpacing: 10, verticalSpacing: 3) {
+            Grid(alignment: .leading, horizontalSpacing: 12, verticalSpacing: 5) {
                 ForEach(rows, id: \.label) { row in
                     GridRow {
                         Text(row.label)
@@ -134,8 +134,8 @@ private struct StatsView: View {
                     }
                 }
             }
-            .font(.caption)
-            .padding(.top, 2)
+            .font(.callout)
+            .padding(.top, 4)
         }
     }
 
@@ -173,12 +173,17 @@ private struct StatsView: View {
     }
 
     private var heatValue: String {
-        switch snapshot.thermal {
-        case .nominal: "Cool"
-        case .fair: "Warm"
-        case .serious: "Hot"
-        case .critical: "Very hot"
+        let state = switch snapshot.thermal {
+        case .nominal: "cool"
+        case .fair: "warm"
+        case .serious: "hot"
+        case .critical: "very hot"
         }
+        let parts = [
+            snapshot.temperature.cpuCelsius.map { "CPU \(Int($0.rounded()))°C" },
+            snapshot.temperature.batteryCelsius.map { "battery \(Int($0.rounded()))°C" },
+        ].compactMap(\.self)
+        return (parts + [state]).joined(separator: " · ")
     }
 
     private var batteryValue: String? {
