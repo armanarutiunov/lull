@@ -40,11 +40,15 @@ final class Monitor {
             swapUsedBytes: MemoryReader.swapUsedBytes()
         ))
 
+        let memory = MemoryReader.usage()
         let snapshot = Snapshot(
             machineCPUPercent: window.machineCPUPercent,
+            recentCPUPercent: window.recentCPUPercent,
             apps: AppGrouping.group(window.processAverages),
             thermal: Thermal(ProcessInfo.processInfo.thermalState),
             memory: MemoryReader.pressure(),
+            memoryUsedBytes: memory.used,
+            memoryTotalBytes: memory.total,
             swapGrowthBytes: window.swapGrowthBytes,
             power: window.samples.last?.power,
             drainingOnACFraction: window.drainingOnACFraction,

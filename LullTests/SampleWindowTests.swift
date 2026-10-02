@@ -36,6 +36,15 @@ struct SampleWindowTests {
         #expect(window.machineCPUPercent == 10)
     }
 
+    @Test func recentCPUUsesOnlyLastInterval() {
+        var window = SampleWindow(duration: 300)
+        window.append(sample(at: 0, busy: 0, total: 1000))
+        window.append(sample(at: 30, busy: 900, total: 2000))
+        window.append(sample(at: 60, busy: 1000, total: 3000))
+        #expect(window.recentCPUPercent == 10)
+        #expect(window.machineCPUPercent == 50)
+    }
+
     @Test func dropsSamplesOlderThanWindow() {
         var window = SampleWindow(duration: 60)
         window.append(sample(at: 0, busy: 0, total: 0))

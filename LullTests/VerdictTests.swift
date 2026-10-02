@@ -15,9 +15,12 @@ struct VerdictTests {
     ) -> Snapshot {
         Snapshot(
             machineCPUPercent: cpu,
+            recentCPUPercent: cpu,
             apps: apps,
             thermal: thermal,
             memory: memory,
+            memoryUsedBytes: 8 << 30,
+            memoryTotalBytes: 16 << 30,
             swapGrowthBytes: swapGrowth,
             power: power,
             drainingOnACFraction: draining,

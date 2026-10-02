@@ -110,7 +110,7 @@ private struct StatsView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
             if !topApps.isEmpty {
-                Text("Top CPU")
+                Text("Top CPU · % of one core")
                     .font(.caption.weight(.semibold))
                     .foregroundStyle(.secondary)
                 ForEach(topApps) { app in
@@ -124,14 +124,18 @@ private struct StatsView: View {
                     .font(.callout)
                 }
             }
-            Text(systemLine)
-                .font(.caption)
-                .foregroundStyle(.secondary)
-            if let powerLine {
-                Text(powerLine)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+            Grid(alignment: .leading, horizontalSpacing: 10, verticalSpacing: 3) {
+                ForEach(rows, id: \.label) { row in
+                    GridRow {
+                        Text(row.label)
+                            .foregroundStyle(.secondary)
+                        Text(row.value)
+                            .monospacedDigit()
+                    }
+                }
             }
+            .font(.caption)
+            .padding(.top, 2)
         }
     }
 
@@ -139,31 +143,53 @@ private struct StatsView: View {
         Array(snapshot.apps.prefix(3).filter { $0.cpuPercentOfCore >= 1 })
     }
 
-    private var systemLine: String {
-        let cpu = snapshot.machineCPUPercent.map { "CPU \(Int($0.rounded()))%" } ?? "CPU –"
-        let thermal = switch snapshot.thermal {
+    private var rows: [(label: String, value: String)] {
+        var rows = [
+            ("CPU", cpuValue),
+            ("RAM", ramValue),
+            ("Heat", heatValue),
+        ]
+        if let batteryValue {
+            rows.append(("Battery", batteryValue))
+        }
+        return rows
+    }
+
+    private var cpuValue: String {
+        let average = snapshot.machineCPUPercent.map { "\(Int($0.rounded()))% avg" } ?? "–"
+        guard let recent = snapshot.recentCPUPercent else { return average }
+        return "\(average) · \(Int(recent.rounded()))% now"
+    }
+
+    private var ramValue: String {
+        let used = Double(snapshot.memoryUsedBytes) / 1_073_741_824
+        let total = Double(snapshot.memoryTotalBytes) / 1_073_741_824
+        let pressure = switch snapshot.memory {
+        case .normal: "pressure normal"
+        case .warning: "pressure high"
+        case .critical: "pressure critical"
+        }
+        return String(format: "%.1f of %.0f GB · %@", used, total, pressure)
+    }
+
+    private var heatValue: String {
+        switch snapshot.thermal {
         case .nominal: "Cool"
         case .fair: "Warm"
         case .serious: "Hot"
         case .critical: "Very hot"
         }
-        let memory = switch snapshot.memory {
-        case .normal: "Memory OK"
-        case .warning: "Memory tight"
-        case .critical: "Memory critical"
-        }
-        return [cpu, thermal, memory].joined(separator: " · ")
     }
 
-    private var powerLine: String? {
+    private var batteryValue: String? {
         guard let power = snapshot.power else { return nil }
-        let source = power.isOnAC ? "On charger" : "On battery"
+        let source = power.isOnAC ? "on charger" : "on battery"
         let flow = switch power.milliamps {
         case ..<0: "draining \(-power.milliamps) mA"
         case 0: "idle"
         default: "charging \(power.milliamps) mA"
         }
-        return "Battery \(power.batteryPercent)% · \(source) · \(flow)"
+        return "\(power.batteryPercent)% · \(source) · \(flow)"
     }
 }
 

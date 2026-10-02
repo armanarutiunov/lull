@@ -27,11 +27,20 @@ struct SampleWindow: Sendable {
 
     var machineCPUPercent: Double? {
         guard let first = samples.first, let last = samples.last, first != last else { return nil }
+        return Self.cpuPercent(from: first, to: last)
+    }
+
+    private static func cpuPercent(from start: Sample, to end: Sample) -> Double? {
         // Mach tick counters are 32-bit and wrap after a few weeks of uptime.
-        let busy = last.busyTicks &- first.busyTicks
-        let total = last.totalTicks &- first.totalTicks
+        let busy = end.busyTicks &- start.busyTicks
+        let total = end.totalTicks &- start.totalTicks
         guard total > 0 else { return nil }
         return Double(busy) / Double(total) * 100
+    }
+
+    var recentCPUPercent: Double? {
+        guard samples.count >= 2 else { return nil }
+        return Self.cpuPercent(from: samples[samples.count - 2], to: samples[samples.count - 1])
     }
 
     var processAverages: [ProcessAverage] {

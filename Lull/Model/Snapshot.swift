@@ -26,9 +26,12 @@ struct AppUsage: Identifiable, Equatable, Sendable {
 
 struct Snapshot: Equatable, Sendable {
     var machineCPUPercent: Double?
+    var recentCPUPercent: Double?
     var apps: [AppUsage]
     var thermal: Thermal
     var memory: MemoryPressure
+    var memoryUsedBytes: UInt64
+    var memoryTotalBytes: UInt64
     var swapGrowthBytes: Int64
     var power: PowerReading?
     var drainingOnACFraction: Double
