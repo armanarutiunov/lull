@@ -1,0 +1,22 @@
+schemaVersion: 1
+enabledWorkflows:
+  - coverage
+  - debugging
+  - device
+  - macos
+  - project-discovery
+  - project-scaffolding
+  - simulator
+  - simulator-management
+  - swift-package
+  - ui-automation
+  - utilities
+  - xcode-ide
+debug: false
+sentryDisabled: true
+setupPreferences:
+  platforms:
+    - macOS
+sessionDefaults:
+  projectPath: Lull.xcodeproj
+  scheme: Lull
