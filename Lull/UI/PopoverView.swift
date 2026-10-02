@@ -110,18 +110,28 @@ private struct StatsView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             if !topApps.isEmpty {
-                Text("Top CPU · % of one core")
+                Grid(alignment: .leading, horizontalSpacing: 12, verticalSpacing: 5) {
+                    GridRow {
+                        Text("Top CPU")
+                        Text("of a core")
+                            .gridColumnAlignment(.trailing)
+                        Text("of the Mac")
+                            .gridColumnAlignment(.trailing)
+                    }
                     .font(.subheadline.weight(.semibold))
                     .foregroundStyle(.secondary)
-                ForEach(topApps) { app in
-                    HStack {
-                        Text(app.name).lineLimit(1)
-                        Spacer()
-                        Text("\(Int(app.cpuPercentOfCore.rounded()))%")
-                            .monospacedDigit()
-                            .foregroundStyle(.secondary)
+                    ForEach(topApps) { app in
+                        GridRow {
+                            Text(app.name)
+                                .lineLimit(1)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                            Text("\(Int(app.cpuPercentOfCore.rounded()))%")
+                                .foregroundStyle(.secondary)
+                            Text(Self.percent(app.cpuPercentOfCore / Double(Self.coreCount)))
+                        }
+                        .font(.body)
+                        .monospacedDigit()
                     }
-                    .font(.body)
                 }
             }
             Grid(alignment: .leading, horizontalSpacing: 12, verticalSpacing: 5) {
@@ -137,6 +147,12 @@ private struct StatsView: View {
             .font(.callout)
             .padding(.top, 4)
         }
+    }
+
+    private static let coreCount = max(ProcessInfo.processInfo.activeProcessorCount, 1)
+
+    private static func percent(_ value: Double) -> String {
+        value < 10 ? String(format: "%.1f%%", value) : "\(Int(value.rounded()))%"
     }
 
     private var topApps: [AppUsage] {
