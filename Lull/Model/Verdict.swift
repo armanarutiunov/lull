@@ -36,7 +36,7 @@ struct Verdict: Equatable, Sendable {
             reasons.append(Reason(
                 id: "app:\(app.id)",
                 level: app.cpuPercentOfCore >= t.appCPUUnsafe ? .unsafe : .caution,
-                message: "\(app.name) is using \(Int(app.cpuPercentOfCore.rounded()))% of a core",
+                message: "\(app.name) is using \(app.coreUsage)",
                 app: app
             ))
         }

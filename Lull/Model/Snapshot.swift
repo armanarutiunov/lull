@@ -24,6 +24,16 @@ struct AppUsage: Identifiable, Equatable, Sendable {
     let bundleURL: URL?
 }
 
+extension AppUsage {
+    // Above one core the work is spread over several cores, so "150% of a core" reads better
+    // as "1.5 cores". Which cores is unknowable: macOS moves threads between them constantly.
+    var coreUsage: String {
+        cpuPercentOfCore < 100
+            ? "\(Int(cpuPercentOfCore.rounded()))% of a core"
+            : String(format: "%.1f cores", cpuPercentOfCore / 100)
+    }
+}
+
 struct Snapshot: Equatable, Sendable {
     var machineCPUPercent: Double?
     var recentCPUPercent: Double?

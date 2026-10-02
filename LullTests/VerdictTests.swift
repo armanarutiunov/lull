@@ -51,9 +51,14 @@ struct VerdictTests {
     }
 
     @Test func busyAppReasonCarriesAppForQuitButton() {
-        let verdict = Verdict.evaluate(snapshot(apps: [app("Emulator", cpu: 100)]))
+        let verdict = Verdict.evaluate(snapshot(apps: [app("Emulator", cpu: 150)]))
         #expect(verdict.reasons.first?.app?.name == "Emulator")
-        #expect(verdict.reasons.first?.message == "Emulator is using 100% of a core")
+        #expect(verdict.reasons.first?.message == "Emulator is using 1.5 cores")
+    }
+
+    @Test(arguments: [(23.4, "23% of a core"), (99.4, "99% of a core"), (100, "1.0 cores"), (250, "2.5 cores")])
+    func coreUsageWording(cpu: Double, expected: String) {
+        #expect(app("X", cpu: cpu).coreUsage == expected)
     }
 
     @Test(arguments: [(Thermal.nominal, Level.safe), (.fair, .caution), (.serious, .unsafe), (.critical, .unsafe)])

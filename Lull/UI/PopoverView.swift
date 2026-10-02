@@ -113,7 +113,7 @@ private struct StatsView: View {
                 Grid(alignment: .leading, horizontalSpacing: 12, verticalSpacing: 5) {
                     GridRow {
                         Text("Top CPU")
-                        Text("of a core")
+                        Text("Cores")
                             .gridColumnAlignment(.trailing)
                         Text("of the Mac")
                             .gridColumnAlignment(.trailing)
@@ -125,7 +125,7 @@ private struct StatsView: View {
                             Text(app.name)
                                 .lineLimit(1)
                                 .frame(maxWidth: .infinity, alignment: .leading)
-                            Text("\(Int(app.cpuPercentOfCore.rounded()))%")
+                            Text(app.coreUsage)
                                 .foregroundStyle(.secondary)
                             Text(Self.percent(app.cpuPercentOfCore / Double(Self.coreCount)))
                         }
