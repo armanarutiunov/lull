@@ -28,7 +28,7 @@ struct PopoverView: View {
         HStack(spacing: 10) {
             Image(systemName: verdict.level.symbolName)
                 .font(.largeTitle)
-                .foregroundStyle(verdict.level.color)
+                .foregroundStyle(verdict.level.gradient)
             VStack(alignment: .leading, spacing: 2) {
                 Text(verdict.level.title)
                     .font(.title2.weight(.semibold))
@@ -78,7 +78,7 @@ private struct ReasonRow: View {
     var body: some View {
         HStack(alignment: .firstTextBaseline, spacing: 8) {
             Circle()
-                .fill(reason.level.color)
+                .fill(reason.level.gradient)
                 .frame(width: 10, height: 10)
             Text(reason.message)
                 .font(.body)
