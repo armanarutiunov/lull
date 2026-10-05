@@ -45,4 +45,4 @@ NSGradient(colors: [NSColor.white.withAlphaComponent(0.12), NSColor.white.withAl
 
 image.unlockFocus()
 let rep = NSBitmapImageRep(data: image.tiffRepresentation!)!
-try! rep.representation(using: .png, properties: [:])!.write(to: URL(fileURLWithPath: "CommandLine.arguments.count > 1 ? CommandLine.arguments[1] : "icon-1024.png""))
+try! rep.representation(using: .png, properties: [:])!.write(to: URL(fileURLWithPath: CommandLine.arguments.count > 1 ? CommandLine.arguments[1] : "icon-1024.png"))
