@@ -1,6 +1,5 @@
 import SwiftUI
 
-@main
 struct LullApp: App {
     @State private var monitor: Monitor = {
         let monitor = Monitor()

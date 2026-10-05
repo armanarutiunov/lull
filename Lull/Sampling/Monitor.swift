@@ -57,6 +57,8 @@ final class Monitor {
             takenAt: .now
         )
         self.snapshot = snapshot
-        verdict = Verdict.evaluate(snapshot)
+        let verdict = Verdict.evaluate(snapshot)
+        self.verdict = verdict
+        try? StatusFile(snapshot: snapshot, verdict: verdict, coreCount: ProcessInfo.processInfo.activeProcessorCount).write()
     }
 }
