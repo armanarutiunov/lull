@@ -41,3 +41,14 @@ ln -s /Applications/Lull.app/Contents/MacOS/Lull ~/.local/bin/lull
 ```
 
 If `updatedAt` is more than a couple of minutes old, Lull isn't running.
+
+## History
+
+Lull also keeps one reading every 5 minutes for the last 24 hours (288 readings, about
+100 KB) in `~/Library/Application Support/Lull/history.json`, so you can see what the Mac
+did while you were away:
+
+```sh
+lull history          # table: time, level, CPU, temperature, battery, top app
+lull history --json   # raw readings
+```
