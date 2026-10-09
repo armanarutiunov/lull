@@ -11,6 +11,7 @@ final class Monitor {
 
     @ObservationIgnored private var window = SampleWindow(duration: windowDuration)
     @ObservationIgnored private var loop: Task<Void, Never>?
+    @ObservationIgnored private var history = History.load()
 
     func start() {
         guard loop == nil else { return }
@@ -59,6 +60,11 @@ final class Monitor {
         self.snapshot = snapshot
         let verdict = Verdict.evaluate(snapshot)
         self.verdict = verdict
-        try? StatusFile(snapshot: snapshot, verdict: verdict, coreCount: ProcessInfo.processInfo.activeProcessorCount).write()
+        let status = StatusFile(snapshot: snapshot, verdict: verdict, coreCount: ProcessInfo.processInfo.activeProcessorCount)
+        try? status.write()
+        // A few seconds after launch the averages cover too little time to be worth keeping.
+        if snapshot.span >= 60, history.record(HistoryEntry(status: status)) {
+            try? history.write()
+        }
     }
 }
